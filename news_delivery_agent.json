@@ -1,0 +1,158 @@
+{
+  "name": "news_delivery_agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fac5af5b-38f1-4714-983b-f9e57bbebd00",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -60
+      ],
+      "id": "a6355025-5529-4b0c-98ea-2514e0465944",
+      "name": "Webhook",
+      "webhookId": "fac5af5b-38f1-4714-983b-f9e57bbebd00"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here are the articles:\n\n1. India launches a satellite to improve rural internet.\n\n2. Floods hit Tamil Nadu, rescue efforts underway.\n\n3. ISRO announces Venus mission for 2027.\n\n4. Startups support open-source AI development.\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -140,
+        -40
+      ],
+      "id": "1ec2acd8-6925-4102-a74c-81ded6a93898",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "mindcraft-gpt4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        340,
+        -60
+      ],
+      "id": "621e617e-fb25-492e-8c06-4b78d2dc5a62",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "XuyzZz2tRUmYEtKJ",
+          "name": "Azure Open AI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.top_news }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        320,
+        160
+      ],
+      "id": "f6bea8e8-37a3-4c3d-bacd-02cd93d3bb03",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6d2b1ded-0daa-4a76-b7d7-bc223f5736bd",
+              "name": "top_news",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        100,
+        180
+      ],
+      "id": "b78ef78a-8d4b-4252-861b-c79187557231",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "783f1438-7b53-41d4-b37d-367a7c646f70",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "929c0fe9ba15a13da8789237c0c42a6deeb9c3952cc7946c0bfa3cb756404714"
+  },
+  "id": "meA5GfXHwfr9teyK",
+  "tags": []
+}
